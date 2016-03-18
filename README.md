@@ -1,5 +1,8 @@
 # identity-swarm
-a p2p, distributed keyserver/keyring
+
+a p2p, distributed keyring
+
+anyone can append their public key, and associate it with arbitrary information, stored as a json payload
 
 ## usage
 
@@ -14,7 +17,6 @@ var idswarm = require('identity-swarm')
 
 var keyring = idswarm({
   keys: require('./keys.json'),
-  sodium: require('chloride/browser'),
   db: requrie('memdb')(),
   hubs: [ 'https://signalhub.mafintosh.com' ]
 })
@@ -41,6 +43,17 @@ will search for a given pubkey, or other property name, in the keyring.
 ## background
 
 see [hyperchat/#10](https://github.com/elsehow/hyperchat2/issues/10)
+
+there are an [increasing](https://github.com/moose-team/friends/)
+[number](https://github.com/haadcode/orbit) 
+of p2p conent sharing schemes out there
+
+[scuttlebutt](https://scuttlebot.io) is particularly interesting, as it provides a distributed, unforgeable feed of messages. scuttlebutt allows for identity discovery within social networks, and can help provide an added layer of social proof when you're deciding to trust a new key 
+
+however, one still might want to address a message to someone outside of their social network, and for that we need a global key discovery.
+
+this project works as a distributed, shared keyring, to which anyone can append their public key, and associate it with arbitrary other information, stored as a json payload.
+
 
 ## license
 
