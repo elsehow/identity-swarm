@@ -38,7 +38,7 @@ function validate (data) {
 
 // export -------------------------------------------
 
-const idSwarm = (opts, newIdCb) => {
+const idSwarm = (opts, newIdCb, badIdCb) => {
 
   opts.sodium = sodium
   opts.valueEncoding = 'json'
@@ -46,17 +46,33 @@ const idSwarm = (opts, newIdCb) => {
 
   function add (keypair, payload, cb) {
 
-    // sign the payload with the private key
-    var sig = sign(keypair.private, payload)
 
-    // create a log message for the new identity
-    var m = keyMessage(keypair.public, payload, sig)
+    try {
 
-    // append it to the log
-    log.append(m, (err, res) => {
-      if (cb) 
-       cb(err, res)
-    })
+      // sign the payload with the private key
+      var sig = sign(keypair.private, payload)
+
+      // create a log message for the new identity
+      var m = keyMessage(keypair.public, payload, sig)
+
+      // validate the message
+      if (validate(m)) {
+        // append it to the log
+        log.append(m, (err, res) => {
+          if (cb) 
+           cb(err, res)
+        })
+      } else {
+        if (cb) {
+         cb(new Error('Badly formed public key message.')) 
+        }
+      }
+      
+    } catch (e) {
+      if (cb) {
+        cb(e)
+      }
+    }
   }
 
   // set up a listener for new data
@@ -64,8 +80,16 @@ const idSwarm = (opts, newIdCb) => {
     .on('data', (data) => {
       // check that the data is well-formed
       // and that the signature checks out
-      if (validate(data.value)) 
+      if (validate(data.value) && newIdCb) 
         newIdCb(data.value)
+      // if the validation doesn't pass
+      else {
+        if (badIdCb) {
+          // call badIdCb
+          badIdCb(data.value)
+        }
+      }
+
     })
 
   return {

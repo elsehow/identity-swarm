@@ -28,6 +28,10 @@ var keyring = idswarm({
 
 ## api
 
+### keyring(opts, goodIdentityCb, badIdentityCb)
+
+TODO explain
+
 ### keyring.add(keypair, payload, [cb])
 
 posts `keypair.public` to the keyring
@@ -56,6 +60,13 @@ however, one still might want to address a message to someone outside of their s
 
 this project works as a distributed, shared keyring, to which anyone can append their public key, and associate it with arbitrary other information, stored as a json payload.
 
+## developing
+
+TODO explain
+
+	npm run dev
+
+navigate to localhost:8000 to see the tests 
 
 ## license
 
