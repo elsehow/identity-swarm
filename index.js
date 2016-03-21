@@ -4,16 +4,16 @@ import crypto from 'crypto-browserify'
 
 // helper functions ----------------------------------
 
-function sign (privKey, payload) {
+function sign (privkey, payload) {
   var s = crypto.createSign('RSA-SHA256')
   s.update(payload)
-  return s.sign(privKey, 'hex')
+  return s.sign(privkey, 'hex')
 }
 
-function verify (pubKey, payload, sig) {
+function verify (pubkey, payload, sig) {
   var v = crypto.createVerify('RSA-SHA256');
   v.update(payload)
-  return v.verify(pubKey, sig, 'hex')
+  return v.verify(pubkey, sig, 'hex')
 }
 
 
@@ -27,13 +27,24 @@ function keyMessage (pubkey, payload, sig) {
   }
 }
 
-const idSwarm = (opts) => {
+function validate (data) {
+  if (data.pubkey && data.payload && data.signature) {
+    if (verify(data.pubkey, data.payload, data.signature)) {
+      return true
+    }
+  }
+  return false
+}
+
+// export -------------------------------------------
+
+const idSwarm = (opts, newIdCb) => {
 
   opts.sodium = sodium
   opts.valueEncoding = 'json'
   let log = swarmlog(opts)
 
-  function add (log, keypair, payload, cb) {
+  function add (keypair, payload, cb) {
 
     // sign the payload with the private key
     var sig = sign(keypair.private, payload)
@@ -47,6 +58,15 @@ const idSwarm = (opts) => {
        cb(err, res)
     })
   }
+
+  // set up a listener for new data
+  log.createReadStream({ live: true })
+    .on('data', (data) => {
+      // check that the data is well-formed
+      // and that the signature checks out
+      if (validate(data.value)) 
+        newIdCb(data.value)
+    })
 
   return {
     log: log,

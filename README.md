@@ -19,9 +19,11 @@ var keyring = idswarm({
   keys: require('./keys.json'),
   db: requrie('memdb')(),
   hubs: [ 'https://signalhub.mafintosh.com' ]
+}, (identity) => {
+	console.log('i see a new identity!', identity)
 })
 
-// TODO show newIdentity, udpateIdentity + lookup
+// TODO show add, update, lookup
 ```
 
 ## api
