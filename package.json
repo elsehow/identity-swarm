@@ -1,0 +1,56 @@
+{
+  "name": "identity-swarm",
+  "version": "1.0.0",
+  "description": "a p2p, distributed keyring",
+  "main": "index.js",
+  "scripts": {
+    "generate-keys": "node -pe \"JSON.stringify(require('ssb-keys').generate())\" > test/keys.json",
+    "watch": "watchify -vd -t babelify test/test.js -o test/bundle.js",
+    "start": "ecstatic test",
+    "dev": "npm run watch & npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/elsehow/identity-swarm.git"
+  },
+  "keywords": [
+    "swarmlog",
+    "webrtc",
+    "p2p",
+    "keyring"
+  ],
+  "author": "elsehow",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/elsehow/identity-swarm/issues"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
+  },
+  "homepage": "https://github.com/elsehow/identity-swarm#readme",
+  "dependencies": {
+    "chloride": "^2.0.3",
+    "crypto-browserify": "^3.11.0",
+    "swarmlog": "^1.4.0"
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "^6.6.0",
+    "babelify": "^7.2.0",
+    "ecstatic": "^1.4.0",
+    "keypair": "^1.0.0",
+    "memdb": "^1.3.1",
+    "ssb-keys": "^5.0.0",
+    "tape": "^4.5.1",
+    "tape-dom": "0.0.10",
+    "watchify": "^3.7.0"
+  }
+}

@@ -1,8 +1,8 @@
 # identity-swarm
 
-a p2p, distributed keyring
+a p2p, distributed keyring around a [swarmlog][0]
 
-anyone can append their public key, and associate it with arbitrary information, stored as a json payload
+users can add their public key, and associate it with an arbitrary JSON payload, which is signed and verified on read/write
 
 ## usage
 
@@ -14,6 +14,7 @@ now, make a new keyring:
 
 ```javascript
 var idswarm = require('identity-swarm')
+var keypair = require('keypair')
 
 var keyring = idswarm({
   keys: require('./keys.json'),
@@ -23,14 +24,25 @@ var keyring = idswarm({
 	console.log('i see a new identity!', identity)
 })
 
-// TODO show add, update, lookup
+keyring.add(keypair(), {handle: 'mminsky'})
+
+// > i see a new identity! {pubkey: ...}
+
 ```
 
 ## api
 
-### keyring(opts, goodIdentityCb, badIdentityCb)
+### keyring(opts, newIdentityCb)
 
-TODO explain
+make a new keyring. available options:
+
+* `opts.keys`: ed25519 keys of the form `{public, private}`. if you are starting a new keyring, you can `npm run generate-keys` to create a new keypair in test/keys.json.
+
+* `opts.hubs` - array of [signalhub][1] hubs to use
+
+* `opts.db` - a [leveldb][2] instance (use [level-browserify][3] in the browser)
+
+`newIdentityCb` will be called whenever a new, *verified* identity comes over the log.
 
 ### keyring.add(keypair, payload, [cb])
 
@@ -40,11 +52,7 @@ posts `keypair.public` to the keyring
 
 `payload` is signed with `keypair.private`. the private key is *NOT* posted to the keyring!
 
-### TODO: keyring.update(oldIdentity, keypair, payload)
-
-### TODO: keyring.lookup({[pubkey='pubkey'], [prop='prop-name']....})
-
-will search for a given pubkey, or other property name, in the keyring.
+`cb(err, res)` (optional) is called when the keypair is added to the log.
 
 ## background
 
@@ -62,11 +70,11 @@ this project works as a distributed, shared keyring, to which anyone can append 
 
 ## developing
 
-TODO explain
+`test/test.js` contains tests and specs. to develop,
 
 	npm run dev
 
-navigate to localhost:8000 to see the tests 
+navigate to localhost:8000 to see the results of the tests 
 
 ## license
 
@@ -78,3 +86,9 @@ BSD
 - use chloride/browser instead of crypto-browserify for signing + verifying
 
 - support keys other than RSA-SHA256
+
+
+[0]: https://github.com/substack/swarmlog
+[1]: https://npmjs.com/package/signalhub
+[2]: https://npmjs.com/package/levelup
+[3]: https://npmjs.com/package/level-browserify

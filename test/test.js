@@ -7,18 +7,20 @@ tape_dom.installCSS();
 tape_dom.stream(test);
 
 // for testing, make a keyring
-function makeKeyring (goodIdCb, badIdCb) {
+function makeKeyring (onId) {
   return idswarm({
     keys: require('./keys.json'),
     db: memdb(),
     hubs: [ 'https://signalhub.mafintosh.com' ]
-  }, goodIdCb)
+  }, onId)
 }
 
 // and a keypair
 import keypair from 'keypair'
 var kp = keypair()
 
+// and a small payload for testing
+var payload = {name: 'elsehow'}
 
 // tests -------------------------------------------
 
@@ -26,7 +28,6 @@ test('adding a good keypair works', (t) => {
 
   t.plan(4)
 
-  var payload = {name: 'elsehow'}
 
   var keyring = makeKeyring((id) => {
     t.deepEqual(payload, id.payload, 'we received the payload ok')
@@ -44,22 +45,40 @@ test('adding a good keypair works', (t) => {
 
 test('keypair.add on a badly formed keypair/payload triggers an error cb', (t) => {
 
-  t.plan(2)
+  t.plan(4)
 
-  var payload = {name: 'elsehow'}
-
-  var keyring = makeKeyring()
-  // (id) => {
-  //   t.notOk(id, 'we should not see an id come through')
-  // })
+  var keyring = makeKeyring((id) => {
+     t.notOk(id, 'we should not see an id come through')
+  })
 
   keyring.add('not a keypair', payload, (err, res) => {
     t.notOk(res, 'no result here - nothing got added')
     t.ok(err, 'we see an error! ' + err)
   })
 
+  keyring.add(keypair, {}, (err, res) => {
+    t.notOk(res, 'no result here - nothing got added')
+    t.ok(err, 'we see an error! ' + err)
+  })
+
 })
 
-// TODO test adding an incorrect keypair to the log directly
+test('adding a bad keypair to the log directly should not work', (t) => {
 
-// TODO maybe move memdb into core deps ? unclear
+  var keyring = makeKeyring((id) => {
+     t.notOk(id, 'we should not see an id come through')
+     t.end()
+  })
+
+  keyring.log.append({
+    pubkey: keypair.public,
+    payload: payload,
+    sig: 'bogus signature',
+  })
+
+  setTimeout(() => {
+    t.ok(1, 'adding a bogus message to the hyperlog does not trigger the newId callback')
+    t.end()
+  }, 700)
+
+})
