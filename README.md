@@ -26,7 +26,7 @@ var keyring = idswarm({
 
 ## api
 
-### keyring.newIdentity(keypair, payload)
+### keyring.add(keypair, payload, [cb])
 
 posts `keypair.public` to the keyring
 
@@ -34,9 +34,9 @@ posts `keypair.public` to the keyring
 
 `payload` is signed with `keypair.private`. the private key is *NOT* posted to the keyring!
 
-### keyring.updateIdentity(oldIdentity, keypair, payload)
+### TODO: keyring.update(oldIdentity, keypair, payload)
 
-### keyring.lookup({[pubkey='pubkey'], [prop='prop-name']....})
+### TODO: keyring.lookup({[pubkey='pubkey'], [prop='prop-name']....})
 
 will search for a given pubkey, or other property name, in the keyring.
 
@@ -58,3 +58,10 @@ this project works as a distributed, shared keyring, to which anyone can append 
 ## license
 
 BSD
+
+
+## todos
+
+- use chloride/browser instead of crypto-browserify for signing + verifying
+
+- support keys other than RSA-SHA256
