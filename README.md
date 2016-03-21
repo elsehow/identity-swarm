@@ -80,14 +80,6 @@ navigate to localhost:8000 to see the results of the tests
 
 BSD
 
-
-## todos
-
-- use chloride/browser instead of crypto-browserify for signing + verifying
-
-- support keys other than RSA-SHA256
-
-
 [0]: https://github.com/substack/swarmlog
 [1]: https://npmjs.com/package/signalhub
 [2]: https://npmjs.com/package/levelup
