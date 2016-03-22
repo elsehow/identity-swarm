@@ -1,6 +1,6 @@
 {
   "name": "identity-swarm",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "a p2p, distributed keyring",
   "main": "index.js",
   "scripts": {

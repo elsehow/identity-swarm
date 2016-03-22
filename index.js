@@ -4,14 +4,14 @@ import crypto from 'crypto-browserify'
 
 // helper functions ----------------------------------
 
-function sign (privkey, payload) {
-  var s = crypto.createSign('RSA-SHA256')
+function sign (privkey, keytype, payload) {
+  var s = crypto.createSign(keytype)
   s.update(payload)
   return s.sign(privkey, 'hex')
 }
 
-function verify (pubkey, payload, sig) {
-  var v = crypto.createVerify('RSA-SHA256');
+function verify (pubkey, keytype, payload, sig) {
+  var v = crypto.createVerify(keytype)
   v.update(payload)
   return v.verify(pubkey, sig, 'hex')
 }
@@ -19,17 +19,18 @@ function verify (pubkey, payload, sig) {
 
 // data structures -----------------------------------
 
-function keyMessage (pubkey, payload, sig) {
+function keyMessage (pubkey, keytype, payload, sig) {
   return {
     pubkey: pubkey,
+    keytype: keytype,
     payload: payload,
     signature: sig,
   }
 }
 
 function validate (data) {
-  if (data.pubkey && data.payload && data.signature) {
-    if (verify(data.pubkey, data.payload, data.signature)) {
+  if (data.pubkey && data.keytype && data.payload && data.signature) {
+    if (verify(data.pubkey, data.keytype, data.payload, data.signature)) {
       return true
     }
   }
@@ -44,16 +45,15 @@ const idSwarm = (opts, onNewId) => {
   opts.valueEncoding = 'json'
   let log = swarmlog(opts)
 
-  function add (keypair, payload, cb) {
-
+  function add (keypair, keytype, payload, cb) {
 
     try {
 
       // sign the payload with the private key
-      var sig = sign(keypair.private, payload)
+      var sig = sign(keypair.private, keytype, payload)
 
       // create a log message for the new identity
-      var m = keyMessage(keypair.public, payload, sig)
+      var m = keyMessage(keypair.public, keytype, payload, sig)
 
       // validate the message
       if (validate(m)) {

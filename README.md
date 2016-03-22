@@ -24,9 +24,9 @@ var keyring = idswarm({
 	console.log('i see a new identity!', identity)
 })
 
-keyring.add(keypair(), {handle: 'mminsky'})
+keyring.add(keypair(), 'RSA-SHA256', {handle: 'mminsky'})
 
-// > i see a new identity! {pubkey: ...}
+// > i see a new identity! {pubkey: ..} 
 
 ```
 
@@ -44,13 +44,13 @@ make a new keyring. available options:
 
 `newIdentityCb` will be called whenever a new, *verified* identity comes over the log.
 
-### keyring.add(keypair, payload, [cb])
+### keyring.add(keypair, keytype, payload, [cb])
 
 posts `keypair.public` to the keyring
 
-`payload` can be arbitrary json
+`keytype` is a string referring to the algo. for now, only `'RSA-SHA256'` has been tested.
 
-`payload` is signed with `keypair.private`. the private key is *NOT* posted to the keyring!
+`payload` can be arbitrary json.  `payload` is signed with `keypair.private`. the private key is *NOT* posted to the keyring!
 
 `cb(err, res)` (optional) is called when the keypair is added to the log.
 
