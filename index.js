@@ -1,5 +1,3 @@
-import swarmlog from 'swarmlog'
-import sodium from 'chloride/browser'
 import crypto from 'crypto-browserify'
 
 // helper functions ----------------------------------
@@ -39,12 +37,7 @@ function validate (data) {
 
 // export -------------------------------------------
 
-const idSwarm = (opts, onNewId) => {
-
-  opts.sodium = sodium
-  opts.valueEncoding = 'json'
-  let log = swarmlog(opts)
-
+const idSwarm = function idSwarm(log, onNewId) {
   function add (keypair, keytype, payload, cb) {
     try {
       // sign the payload with the private key
@@ -58,7 +51,7 @@ const idSwarm = (opts, onNewId) => {
         // append it to the log
         log.add(null, message, (err, node) => {
           if (cb) {
-            cb(err, res)
+            cb(err, node)
           }
         })
       } else {
