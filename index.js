@@ -39,7 +39,7 @@ function validate (data) {
 
 // export -------------------------------------------
 
-const idSwarm = (opts, onNewId) => {
+const idSwarm = function idSwarm(opts, onNewId) {
 
   opts.sodium = sodium
   opts.valueEncoding = 'json'
