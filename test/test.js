@@ -1,5 +1,7 @@
 import idswarm from '..'
 import memdb from 'memdb'
+import swarmlog from 'swarmlog'
+import sodium from 'chloride/browser'
 // testing libs
 import test from 'tape'
 import tape_dom from 'tape-dom'
@@ -7,12 +9,16 @@ tape_dom.installCSS();
 tape_dom.stream(test);
 
 // for testing, make a keyring
-function makeKeyring (onId) {
-  return idswarm({
+function makeKeyring(onId) {
+  let opts = {
     keys: require('./keys.json'),
     db: memdb(),
-    hubs: [ 'https://signalhub.mafintosh.com' ]
-  }, onId)
+    hubs: [ 'https://signalhub.mafintosh.com' ],
+    sodium: sodium,
+    valueEncoding: 'json'
+  }
+  let log = swarmlog(opts)
+  return idswarm(log, onId)
 }
 
 // and a keypair
