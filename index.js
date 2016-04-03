@@ -46,21 +46,20 @@ const idSwarm = (opts, onNewId) => {
   let log = swarmlog(opts)
 
   function add (keypair, keytype, payload, cb) {
-
     try {
-
       // sign the payload with the private key
-      var sig = sign(keypair.private, keytype, payload)
+      var signature = sign(keypair.private, keytype, payload)
 
       // create a log message for the new identity
-      var m = keyMessage(keypair.public, keytype, payload, sig)
+      var message = keyMessage(keypair.public, keytype, payload, signature)
 
       // validate the message
-      if (validate(m)) {
+      if (validate(message)) {
         // append it to the log
-        log.append(m, (err, res) => {
-          if (cb) 
-           cb(err, res)
+        log.add(null, message, (err, node) => {
+          if (cb) {
+            cb(err, res)
+          }
         })
       } else {
         if (cb) {
@@ -68,9 +67,9 @@ const idSwarm = (opts, onNewId) => {
         }
       }
 
-    } catch (e) {
+    } catch (err) {
       if (cb) {
-        cb(e)
+        cb(err)
       }
     }
   }
@@ -78,8 +77,7 @@ const idSwarm = (opts, onNewId) => {
   // set up a listener for new data
   log.createReadStream({ live: true })
     .on('data', (data) => {
-      // check that the data is well-formed
-      // and that the signature checks out
+      // check that the data is well-formed and that the signature checks out
       if (validate(data.value) && onNewId) 
         onNewId(data.value)
     })
